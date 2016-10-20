@@ -2,10 +2,12 @@
 
 //Program for converting daymet csv file to format needed for midterm
 
+//Program for converting daymet csv file to format needed for midterm
 
-import java.lang.*;
-import java.util.*;
+
 import java.io.*;
+import java.util.*;
+import java.lang.*;
 
 class Converter{
 
@@ -14,16 +16,17 @@ class Converter{
 		BufferedReader br;
 		BufferedWriter bw;
 		try{
-			br = new BufferedReader(new FileReader(args[0]));
+			br = new BufferedReader(new FileReader("weatherData.csv"));
 			bw = new BufferedWriter(new FileWriter("outputWeatherData.csv"));
 		
 
 			String line;
 			String header = "Year,Month,Day,T_max,T_min,Precip (mm),T_ave,Precip (cm),rh_ave";
+			System.out.println(header);
 			bw.write(header , 0, header.length());
 			bw.newLine();
-			while ((line=br.readLine())!=null){
-				String outLine = "";
+			line = br.readLine();
+			while (line!=null){
 				String year = "";
 				String month = "";
 				String day = "";
@@ -32,11 +35,14 @@ class Converter{
 				String precipMM = "";
 				String tAvg ="";
 				String precipCM = "";
-				String rhAvg = "";
+				String rhAvg = "rhAvg";
 				String temp = "";
 
-				if(line.charAt(0)!='1'||line.charAt(0)!=2){
-					break;
+				if(line.length()==0){
+					//do nothing
+				}
+				else if(line.charAt(0)!='1'&& line.charAt(0)!='2'){
+					//do nothing
 				}
 				else{
 					int i=0;
@@ -50,18 +56,43 @@ class Converter{
 							}
 							else if(i==1){
 								//calculate month and day
-								month = "month";
-								day = "day";
+								String doy = temp;
+								Calendar cal = Calendar.getInstance();
+								cal.set(Calendar.YEAR, Integer.parseInt(year));
+								cal.set(Calendar.DAY_OF_YEAR, Integer.parseInt(doy));
+
+								int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+								int m = cal.get(Calendar.MONTH);
+								month = Integer.toString(m+1);
+								day = Integer.toString(dayOfMonth);
 
 							}
 							else if(i==3){
 								//assign mm and calculate cm
 								precipMM = temp;
 								//parseFloat
-								Integer mm = Integer.parseInt(precipMM);
-								Integer cm = mm/10;
+								Double mm = Double.parseDouble(precipMM);
+								Double cm = (mm/10);
 
-								precipCM = Integer.toString(cm);
+								//format the doubles
+								long u = cm.longValue();
+								if(cm == u){
+        							precipCM = String.format("%d", u);
+        						}
+   								else{
+        							precipCM =
+        							  String.format("%s", cm);
+								}	
+
+								u = mm.longValue();
+       			 				if(mm == u){
+       								precipMM = String.format("%d",u);
+								}
+    							else{
+       			 					precipMM = String.format("%s", mm);						//parseFloat
+       			 				}
+
+
 							}
 							else if(i==6){
 								//assign maxTemp
@@ -70,17 +101,40 @@ class Converter{
 							else if(i==7){
 								//assign minTemp and calculate average temp
 								tMin = temp;
-								Float t_min = Float.parseFloat(tMin);
-								Float t_max = Float.parseFloat(tMax);
+								Double t_min = Double.parseDouble(tMin);
+								Double t_max = Double.parseDouble(tMax);
 
-								int avgTemp = (int) ((t_min + t_max) / 2);	
+								Double avgTemp =  ((t_min + t_max) / 2);	
 
-								tAvg = Integer.toString(avgTemp);						//parseFloat
+								long u = avgTemp.longValue();
+								if(avgTemp == u){
+       								tAvg = String.format("%d",u);
+								}
+    							else{
+       			 					tAvg = String.format("%s", avgTemp);						//parseFloat
+       			 				}
+
+       			 				 u = t_min.longValue();
+       			 				if(t_min == u){
+       								tMin = String.format("%d",u);
+								}
+    							else{
+       			 					tMin = String.format("%s", t_min);						//parseFloat
+       			 				}
+
+       			 				 u = t_max.longValue();
+       			 				if(t_max == u){
+       								tMax = String.format("%d",u);
+								}
+    							else{
+       			 					tMax = String.format("%s", t_max);						//parseFloat
+       			 				}
 
 							}
 							temp = "";
 							i++;
 						}
+						
 						else{
 							String c = Character.toString(line.charAt(j));
 							temp = temp + c;
@@ -88,11 +142,16 @@ class Converter{
 						j++;
 					}
 
-
+					String x = year+","+month+","+day+","+tMax+","+tMin+","+precipMM+","+tAvg+","+precipCM+","+rhAvg;
+					System.out.println(x);
+					bw.write(x, 0 , x.length());
+					bw.newLine();
+				
 				}
-				String x = year+","+month+","+day+","+tMax+","+tMin+","+precipMM+","+tAvg+","+precipCM+","+rhAvg;
-				bw.write(x, 0 , x.length());
-				bw.newLine();
+				
+				
+
+				line = br.readLine();
 			}
 		}
 		catch(FileNotFoundException e){
