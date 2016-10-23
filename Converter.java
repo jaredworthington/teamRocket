@@ -1,10 +1,3 @@
-
-
-//Program for converting daymet csv file to format needed for midterm
-
-//Program for converting daymet csv file to format needed for midterm
-
-
 import java.io.*;
 import java.util.*;
 import java.lang.*;
@@ -37,6 +30,7 @@ class Converter{
 				String precipCM = "";
 				String rhAvg = "rhAvg";
 				String temp = "";
+				String vp = "";
 
 				if(line.length()==0){
 					//do nothing
@@ -47,9 +41,35 @@ class Converter{
 				else{
 					int i=0;
 					int j=0;
-					while(j<line.length()){
+					while(j<=line.length()){
+						
+						if(j== line.length()){
+							vp = temp;
+						
+							Double vpD = Double.parseDouble(vp);
 
-						if(line.charAt(j)==','){
+   			 			//---------------------------------------------------------------
+						//-----Calculate relative humidity for the day-------------------
+							Double t_min = Double.parseDouble(tMin);
+							Double t_max = Double.parseDouble(tMax);
+							Double avgTemp =  ((t_min + t_max) / 2);
+							
+							Double up = (7.5*avgTemp)/(237.3+avgTemp);
+							Double u = Math.pow(10.0, up);
+							Double rh = 100*(vpD/u);
+
+							long f = rh.longValue();
+				 			if(rh== f){
+								rhAvg = String.format("%d",f);
+							}
+							else{
+				 				rhAvg = String.format("%s", rh);						//parseFloat
+		       		 		}
+	       		 		//--------------------------------------------------------------
+
+
+						}
+						else if(line.charAt(j)==','){
 
 							if(i==0){
 								year =temp;
@@ -131,6 +151,7 @@ class Converter{
        			 				}
 
 							}
+						
 							temp = "";
 							i++;
 						}
