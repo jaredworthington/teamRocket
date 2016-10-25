@@ -1,6 +1,6 @@
 #!/bin/bash
 
-javac Converter.java
-java Converter 
-mv outputWeatherData.csv ./MoLS/Weather/outputWeatherData.csv
+javac Converter.java 
+java Converter weatherData.csv
+mv out-weatherData.csv ./MoLS/Weather/outputWeatherData.csv
 python ./MoLS/Run_Model.py

@@ -8,16 +8,17 @@ class Converter{
 
 		BufferedReader br;
 		BufferedWriter bw;
+		String outputLine = "";
+		String header = "Year,Month,Day,T_max,T_min,Precip (mm),T_ave,Precip (cm),rh_ave";
 		try{
-			br = new BufferedReader(new FileReader("weatherData.csv"));
-			bw = new BufferedWriter(new FileWriter("outputWeatherData.csv"));
+			br = new BufferedReader(new FileReader(args[0]));
 		
 
 			String line;
-			String header = "Year,Month,Day,T_max,T_min,Precip (mm),T_ave,Precip (cm),rh_ave";
+			
+			
 			System.out.println(header);
-			bw.write(header , 0, header.length());
-			bw.newLine();
+		
 			line = br.readLine();
 			while (line!=null){
 				String year = "";
@@ -52,11 +53,18 @@ class Converter{
 						//-----Calculate relative humidity for the day-------------------
 							Double t_min = Double.parseDouble(tMin);
 							Double t_max = Double.parseDouble(tMax);
-							Double avgTemp =  ((t_min + t_max) / 2);
+							Double t_mink = t_min+273;
+							Double t_maxk = t_max+273;
+							Double avgTemp =  ((t_mink + t_maxk) / 2);
 							
-							Double up = (7.5*avgTemp)/(237.3+avgTemp);
-							Double u = Math.pow(10.0, up);
-							Double rh = 100*(vpD/u);
+							//avgTemp = avgTemp+273;
+							//Double up = (7.5*avgTemp)/(237.3+avgTemp);
+							//Double u = 6.11 * Math.pow(10.0, up);
+							//Double rh = 100*(vpD/u);
+
+							Double satVp = Math.exp(((2.453*(10^6)/461)*((1/273) - (1/avgTemp))))*6.11;
+
+							Double rh = vpD/satVp;
 
 							long f = rh.longValue();
 				 			if(rh== f){
@@ -66,7 +74,6 @@ class Converter{
 				 				rhAvg = String.format("%s", rh);						//parseFloat
 		       		 		}
 	       		 		//--------------------------------------------------------------
-
 
 						}
 					
@@ -165,9 +172,7 @@ class Converter{
 					}
 
 					String x = year+","+month+","+day+","+tMax+","+tMin+","+precipMM+","+tAvg+","+precipCM+","+rhAvg;
-					System.out.println(x);
-					bw.write(x, 0 , x.length());
-					bw.newLine();
+					outputLine = outputLine + x + '\n';
 				
 				}
 				
@@ -179,5 +184,11 @@ class Converter{
 		catch(FileNotFoundException e){
 			System.out.println("fileNotFound");
 		}
+
+		bw = new BufferedWriter(new FileWriter(args[0]));
+		bw.write(header , 0, header.length());
+		bw.newLine();
+		bw.write(outputLine,0,outputLine.length());
+		bw.close();
 	}
 }
