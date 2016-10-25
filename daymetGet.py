@@ -65,7 +65,7 @@ for latitude in range(0,latStep):
 		# Get the first and last year and build a string in formay yyyy-yyyy for creating a filename
 		# prepend lat-lon to the filename 
 		filenameYears = payload['year'].split(',')
-		filename = str(payload['lat'])+'-'+str(payload['lon'])+'-'+filenameYears[0]+'-'+filenameYears[-1]
+		filename = str(payload['lat'])+'_'+str(payload['lon'])+'_'+filenameYears[0]+'-'+filenameYears[-1]
 		if os.path.isfile(dataDir+'/'+filename):
 			print("File "+dataDir+'/'+filename+" already exists.")
 		else:
