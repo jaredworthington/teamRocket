@@ -179,7 +179,7 @@ class Converter{
 			System.out.println("fileNotFound");
 		}
 
-		bw = new BufferedWriter(new FileWriter("out-"+args[0]));
+		bw = new BufferedWriter(new FileWriter(args[0]));
 		bw.write(header , 0, header.length());
 		bw.newLine();
 		bw.write(outputLine,0,outputLine.length());
