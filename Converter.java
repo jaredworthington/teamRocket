@@ -8,16 +8,17 @@ class Converter{
 
 		BufferedReader br;
 		BufferedWriter bw;
+		String outputLine = "";
+		String header = "Year,Month,Day,T_max,T_min,Precip (mm),T_ave,Precip (cm),rh_ave";
 		try{
-			br = new BufferedReader(new FileReader("weatherData.csv"));
-			bw = new BufferedWriter(new FileWriter("outputWeatherData.csv"));
+			br = new BufferedReader(new FileReader(args[0]));
 		
 
 			String line;
-			String header = "Year,Month,Day,T_max,T_min,Precip (mm),T_ave,Precip (cm),rh_ave";
+			
+			
 			System.out.println(header);
-			bw.write(header , 0, header.length());
-			bw.newLine();
+		
 			line = br.readLine();
 			while (line!=null){
 				String year = "";
@@ -165,9 +166,7 @@ class Converter{
 					}
 
 					String x = year+","+month+","+day+","+tMax+","+tMin+","+precipMM+","+tAvg+","+precipCM+","+rhAvg;
-					System.out.println(x);
-					bw.write(x, 0 , x.length());
-					bw.newLine();
+					outputLine = outputLine + x + '\n';
 				
 				}
 				
@@ -179,5 +178,11 @@ class Converter{
 		catch(FileNotFoundException e){
 			System.out.println("fileNotFound");
 		}
+
+		bw = new BufferedWriter(new FileWriter("out-"+args[0]));
+		bw.write(header , 0, header.length());
+		bw.newLine();
+		bw.write(outputLine,0,outputLine.length());
+	
 	}
 }
