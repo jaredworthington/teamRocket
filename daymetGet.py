@@ -29,16 +29,18 @@ Coordinate info for Flagstaff:
 """
 import requests
 import os
+import MoLS
+import matlab
 
 #coordinates for your city, one upper left, one bottom right(set to flagstaff)
 
 ul = (35.24374,-111.7041)
 br = (35.11915,-111.5063)
-years =  "1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015"
+years =  "2015"#"1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015"
 #the number of steps in the lat/lon difference, we rounded up to make sure 
 # we would not step over any square kilometers.
-latStep = 15
-lonStep = 20
+latStep = 5 #15
+lonStep = 5 #20
 
 #the change in lat and lon values, for incrementing
 deltaLat = (ul[0]-br[0])/latStep
@@ -60,13 +62,16 @@ if not os.path.exists('daymetData'):
 """
 Loop through the grid of lat,lon to get all of the 1km^2 daymet csvs
 """
+#compile the converter program
 os.system("javac Converter.java")
+
+#initialize mols
 for latitude in range(0,latStep):
 	for longitude in range(0,lonStep):
 		# Get the first and last year and build a string in formay yyyy-yyyy for creating a filename
 		# prepend lat-lon to the filename 
 		filenameYears = payload['year'].split(',')
-		filename = str(payload['lat'])+'_'+str(payload['lon'])+'_'+filenameYears[0]+'-'+filenameYears[-1]
+		filename = str(payload['lat'])+'_'+str(payload['lon'])+'_'+filenameYears[0]+'-'+filenameYears[-1]+'.csv'
 		if os.path.isfile(dataDir+'/'+filename):
 			print("File "+dataDir+'/'+filename+" already exists.")
 		else:
@@ -83,13 +88,20 @@ for latitude in range(0,latStep):
 			print(csv.text,file = f)
 
 			#System calls to generate Jocelines files. DEPENDENT ON FILE LOCATIONS
-			os.system("java Converter "+datadir+'/'+filename)
-			os.system("mv "+datadir+'/'+filename+ "./MoLS/Weather/"+filename)
-			
-			#os.system("python ./MoLS/Run_Model.py")
+			#os.system("java Converter "+dataDir+'/'+filename)
+			#os.system("mv "+dataDir+'/'+filename+ "./MoLS/Weather/"+filename)
+			filename = filename[:-4]
+			#modeler.MoLS('./'+dataDir,filename,nargout=0)
 
 		payload['lon'] += deltaLon #increment longitude
 	payload['lon'] = br[1] #reset latitude
 	payload['lat'] += deltaLat #increment latitude
-
+for f in os.listdir(dataDir):
+	os.system("java Converter "+dataDir+'/'+f)
+modeler = MoLS.initialize();
+for f in os.listdir(dataDir):
+	#modeler.MoLS('./Weather','Test_Data',nargout=0)
+	filename = f[:-4]
+	modeler.MoLS('./'+dataDir,filename,nargout=0)
+modeler.terminate()
 

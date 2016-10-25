@@ -53,7 +53,9 @@ class Converter{
 						//-----Calculate relative humidity for the day-------------------
 							Double t_min = Double.parseDouble(tMin);
 							Double t_max = Double.parseDouble(tMax);
-							Double avgTemp =  ((t_min + t_max) / 2);
+							Double t_mink = t_min+273;
+							Double t_maxk = t_max+273;
+							Double avgTemp =  ((t_mink + t_maxk) / 2);
 							
 							//avgTemp = avgTemp+273;
 							//Double up = (7.5*avgTemp)/(237.3+avgTemp);
@@ -183,10 +185,10 @@ class Converter{
 			System.out.println("fileNotFound");
 		}
 
-		bw = new BufferedWriter(new FileWriter("out-"+args[0]));
+		bw = new BufferedWriter(new FileWriter(args[0]));
 		bw.write(header , 0, header.length());
 		bw.newLine();
 		bw.write(outputLine,0,outputLine.length());
-	
+		bw.close();
 	}
 }
