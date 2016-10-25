@@ -55,9 +55,14 @@ class Converter{
 							Double t_max = Double.parseDouble(tMax);
 							Double avgTemp =  ((t_min + t_max) / 2);
 							
-							Double up = (7.5*avgTemp)/(237.3+avgTemp);
-							Double u = Math.pow(10.0, up);
-							Double rh = 100*(vpD/u);
+							//avgTemp = avgTemp+273;
+							//Double up = (7.5*avgTemp)/(237.3+avgTemp);
+							//Double u = 6.11 * Math.pow(10.0, up);
+							//Double rh = 100*(vpD/u);
+
+							Double satVp = Math.exp(((2.453*(10^6)/461)*((1/273) - (1/avgTemp))))*6.11;
+
+							Double rh = vpD/satVp;
 
 							long f = rh.longValue();
 				 			if(rh== f){
@@ -67,7 +72,6 @@ class Converter{
 				 				rhAvg = String.format("%s", rh);						//parseFloat
 		       		 		}
 	       		 		//--------------------------------------------------------------
-
 
 						}
 					
@@ -179,7 +183,7 @@ class Converter{
 			System.out.println("fileNotFound");
 		}
 
-		bw = new BufferedWriter(new FileWriter(args[0]));
+		bw = new BufferedWriter(new FileWriter("out-"+args[0]));
 		bw.write(header , 0, header.length());
 		bw.newLine();
 		bw.write(outputLine,0,outputLine.length());
