@@ -2,4 +2,5 @@
 
 javac Converter.java
 java Converter 
-python Run_Model.py outputWeatherData.csv
+mv outputWeatherData.csv ./MoLS/Weather/outputWeatherData.csv
+python ./MoLS/Run_Model.py
