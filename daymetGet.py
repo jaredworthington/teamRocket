@@ -41,8 +41,8 @@ br = (35.11915,-111.5063)
 years =  "2015"#"1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015"
 #the number of steps in the lat/lon difference, we rounded up to make sure 
 # we would not step over any square kilometers.
-latStep = 5 #15
-lonStep = 5 #20
+latStep = 9
+lonStep = 12
 
 #the change in lat and lon values, for incrementing
 deltaLat = (ul[0]-br[0])/latStep
