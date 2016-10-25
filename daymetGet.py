@@ -26,6 +26,8 @@ Coordinate info for Flagstaff:
 	Upper Left: 35.24374, -111.7041
 	Bottom Right: 35.11915, -111.5063
 	
+
+Added: run each downloaded file through converter and then mols
 """
 import requests
 import os
@@ -69,6 +71,7 @@ os.system("javac Converter.java")
 for latitude in range(0,latStep):
 	for longitude in range(0,lonStep):
 		# Get the first and last year and build a string in formay yyyy-yyyy for creating a filename
+		#This doesn't work as intended for series with gaps, but still helps organize a bit
 		# prepend lat-lon to the filename 
 		filenameYears = payload['year'].split(',')
 		filename = str(payload['lat'])+'_'+str(payload['lon'])+'_'+filenameYears[0]+'-'+filenameYears[-1]+'.csv'
@@ -76,7 +79,6 @@ for latitude in range(0,latStep):
 			print("File "+dataDir+'/'+filename+" already exists.")
 		else:
 			csv = requests.get(url, params=payload)
-			#csv = requests.get("https://daymet.ornl.gov/data/send/saveData?lat=43.1&lon=-85.3&year=2012")
 			"""
 				UNCOMMENT/comment to toggle print of filenames as written
 			"""
@@ -87,17 +89,21 @@ for latitude in range(0,latStep):
 			#write the csv
 			print(csv.text,file = f)
 
-			#System calls to generate Jocelines files. DEPENDENT ON FILE LOCATIONS
-			#os.system("java Converter "+dataDir+'/'+filename)
-			#os.system("mv "+dataDir+'/'+filename+ "./MoLS/Weather/"+filename)
-			filename = filename[:-4]
-			#modeler.MoLS('./'+dataDir,filename,nargout=0)
-
 		payload['lon'] += deltaLon #increment longitude
 	payload['lon'] = br[1] #reset latitude
 	payload['lat'] += deltaLat #increment latitude
+
+"""
+   Convert all the daymet CSVs into usable data for MoLS
+   
+"""
 for f in os.listdir(dataDir):
 	os.system("java Converter "+dataDir+'/'+f)
+
+"""
+   Iterate through the converted csvs and run them through
+   MoLS.
+"""
 modeler = MoLS.initialize();
 for f in os.listdir(dataDir):
 	#modeler.MoLS('./Weather','Test_Data',nargout=0)
